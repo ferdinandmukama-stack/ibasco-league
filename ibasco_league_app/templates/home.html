@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ibasco League Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            background: #f4f6f9;
+        }
+
+        header {
+            background: #1e3a8a;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        nav {
+            background: #111;
+            padding: 12px;
+            text-align: center;
+        }
+
+        nav a {
+            color: white;
+            margin: 15px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            color: #00d4ff;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card {
+            background: green;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #1e3a8a;
+            color: white;
+            padding: 8px;
+        }
+
+        td {
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background: #f1f1f1;
+        }
+
+        .highlight {
+            color: #1e3a8a;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>⚽ Ibasco League Dashboard</h1>
+    <p>Live Stats & Competition Overview</p>
+</header>
+
+<nav>
+    <a href="/">Home</a>
+    <a href="/teams/">Teams</a>
+    <a href="/fixtures/">Fixtures</a>
+    <a href="/table/">Table</a>
+    <a href="/topscorers/">Top Scorers</a>
+</nav>
+
+<div class="container">
+
+    <!-- MATCHES -->
+    <div class="card">
+        <h2>🔥 Latest Matches</h2>
+
+        {% for match in matches %}
+            <p>
+                <span class="highlight">{{ match.home_team }}</span>
+                <strong>{{ match.home_score }} - {{ match.away_score }}</strong>
+                <span class="highlight">{{ match.away_team }}</span>
+            </p>
+        {% empty %}
+            <p>No matches yet</p>
+        {% endfor %}
+    </div>
+
+    <!-- TOP SCORERS -->
+    <div class="card">
+        <h2>🏆 Top Scorers</h2>
+
+        <table>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Team</th>
+                <th>Goals</th>
+            </tr>
+
+            {% for player in players %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ player.name }}</td>
+                <td>{{ player.team }}</td>
+                <td><strong>{{ player.goals }}</strong></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">No players yet</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>
