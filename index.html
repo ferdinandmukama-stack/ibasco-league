@@ -24,15 +24,8 @@ body {
     padding: 90px 20px;
 }
 
-.hero h1 {
-    font-size: 42px;
-    margin: 0;
-}
-
-.hero p {
-    opacity: 0.8;
-    margin-top: 10px;
-}
+.hero h1 { font-size: 42px; margin: 0; }
+.hero p { opacity: 0.8; margin-top: 10px; }
 
 /* BUTTONS */
 .btn {
@@ -45,12 +38,9 @@ body {
     border-radius: 6px;
     text-decoration: none;
 }
+.btn:hover { background: white; }
 
-.btn:hover {
-    background: white;
-}
-
-/* DASHBOARD GRID */
+/* GRID */
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -72,31 +62,6 @@ body {
     margin: 20px;
     border-radius: 12px;
     text-align: center;
-}
-
-/* EXECUTIVES */
-.exec {
-    padding: 20px;
-}
-
-.exec-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
-}
-
-.exec-card {
-    background: #1c2233;
-    padding: 10px;
-    border-radius: 10px;
-    text-align: center;
-}
-
-.exec-card img {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
 }
 
 footer {
@@ -146,45 +111,28 @@ footer {
 
 </div>
 
-<!-- 🔥 LIVE FEATURE MATCH (FIREBASE) -->
+<!-- FEATURE MATCH -->
 <div class="feature">
     <h2>🔥 Featured Match (Live)</h2>
     <p id="latestMatch">Loading match...</p>
-</div>
-
-<!-- EXECUTIVES -->
-<div class="exec">
-    <h2 style="text-align:center;">League Executives</h2>
-
-    <div class="exec-grid">
-
-        <div class="exec-card">
-            <img src="https://via.placeholder.com/100">
-            <h4>Chairman</h4>
-        </div>
-
-        <div class="exec-card">
-            <img src="images/secretary.jpg">
-            <h4>Secretary</h4>
-        </div>
-
-        <div class="exec-card">
-            <img src="https://via.placeholder.com/100">
-            <h4>Treasurer</h4>
-        </div>
-
-    </div>
 </div>
 
 <footer>
     <p>© 2026 Ibasco League</p>
 </footer>
 
-<!-- 🔥 FIREBASE SCRIPT -->
+<!-- FIREBASE -->
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+    getFirestore,
+    collection,
+    onSnapshot,
+    query,
+    orderBy,
+    limit
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
@@ -195,9 +143,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-async function loadMatches() {
+/* 🔥 LIVE MATCH LOADING */
+const matchesRef = collection(db, "matches");
 
-    const snapshot = await getDocs(collection(db, "matches"));
+/* REAL-TIME UPDATE FIX */
+onSnapshot(matchesRef, (snapshot) => {
 
     let matches = [];
 
@@ -205,10 +155,10 @@ async function loadMatches() {
         matches.push(doc.data());
     });
 
-    // show total matches
+    // total matches
     document.getElementById("matchesPlayed").innerText = matches.length;
 
-    // show latest match
+    // latest match
     if (matches.length > 0) {
         let latest = matches[matches.length - 1];
 
@@ -217,9 +167,7 @@ async function loadMatches() {
     } else {
         document.getElementById("latestMatch").innerText = "No matches yet";
     }
-}
-
-loadMatches();
+});
 
 </script>
 
