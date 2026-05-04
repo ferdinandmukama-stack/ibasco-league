@@ -1,1 +1,0 @@
-web: gunicorn ibasco_league.wsgi
