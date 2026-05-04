@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Ibasco League</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#0b0f19;
+    color:white;
+}
+
+/* HERO */
+.hero{
+    background:
+    linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)),
+    url("https://images.unsplash.com/photo-1522778119026-d647f0596c20");
+
+    background-size:cover;
+    background-position:center;
+    text-align:center;
+    padding:90px 20px;
+}
+
+.hero h1{
+    font-size:42px;
+    margin:0;
+}
+
+.hero p{
+    opacity:0.8;
+    margin-top:10px;
+}
+
+/* BUTTONS */
+.btn{
+    display:inline-block;
+    margin:10px;
+    padding:12px 20px;
+    background:#ffcc00;
+    color:black;
+    font-weight:bold;
+    border-radius:8px;
+    text-decoration:none;
+    transition:0.2s;
+}
+
+.btn:hover{
+    background:white;
+    transform:scale(1.05);
+}
+
+/* GRID */
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:15px;
+    padding:20px;
+}
+
+.card{
+    background:#1c2233;
+    padding:20px;
+    border-radius:12px;
+    text-align:center;
+    transition:0.2s;
+}
+
+.card:hover{
+    transform:translateY(-3px);
+    background:#222a3d;
+}
+
+/* FEATURE BOX */
+.feature{
+    background:linear-gradient(135deg,#0d47a1,#1a237e);
+    padding:25px;
+    margin:20px;
+    border-radius:15px;
+    text-align:center;
+}
+
+/* TOP SCORER */
+.scorer-name{
+    color:#ffcc00;
+    font-size:30px;
+    margin:10px 0;
+}
+
+.goals{
+    font-size:24px;
+    font-weight:bold;
+}
+
+/* FOOTER */
+footer{
+    background:#0d47a1;
+    text-align:center;
+    padding:15px;
+    margin-top:30px;
+}
+
+.live-badge{
+    background:red;
+    padding:5px 10px;
+    border-radius:5px;
+    font-size:12px;
+    margin-left:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- HERO -->
+<div class="hero">
+
+    <h1>⚽ Ibasco Football League</h1>
+
+    <p>Where Local Football Meets Excellence</p>
+
+    <a href="teams.html" class="btn">Teams</a>
+
+    <a href="fixtures.html" class="btn">Fixtures</a>
+
+    <a href="table.html" class="btn">League Table</a>
+
+    <a href="#topScorerSection" class="btn">Top Scorer</a>
+
+</div>
+
+<!-- DASHBOARD -->
+<div class="grid">
+
+    <div class="card">
+        <h2>11</h2>
+        <p>Registered Teams</p>
+    </div>
+
+    <div class="card">
+        <h2 id="matchesPlayed">0</h2>
+        <p>Matches Played</p>
+    </div>
+
+    <div class="card">
+        <h2 id="goalsCount">0</h2>
+        <p>Total Goals</p>
+    </div>
+
+    <div class="card">
+        <h2>2026</h2>
+        <p>Season</p>
+    </div>
+
+</div>
+
+<!-- FEATURED MATCH -->
+<div class="feature">
+
+    <h2>
+        🔥 Featured Match
+        <span class="live-badge">LIVE</span>
+    </h2>
+
+    <p id="latestMatch">
+        Loading latest match...
+    </p>
+
+</div>
+
+<!-- TOP SCORER -->
+<div class="feature" id="topScorerSection">
+
+    <h2>🏆 Top Scorer</h2>
+
+    <div id="topScorer">
+
+        Loading top scorer...
+
+    </div>
+
+</div>
+
+<footer>
+
+    © 2026 Ibasco League
+
+</footer>
+
+<!-- 🔥 FIREBASE -->
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+
+import {
+    getFirestore,
+    collection,
+    onSnapshot
+}
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+/* 🔥 FIREBASE CONFIG */
+const firebaseConfig = {
+
+  apiKey: "YOUR_API_KEY",
+
+  authDomain: "ibasco-league-project.firebaseapp.com",
+
+  projectId: "ibasco-league-project",
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+/* 🔥 LIVE MATCHES */
+onSnapshot(collection(db, "matches"), (snapshot) => {
+
+    let matches = [];
+
+    let totalGoals = 0;
+
+    snapshot.forEach(doc => {
+
+        let match = doc.data();
+
+        matches.push(match);
+
+        totalGoals +=
+        Number(match.scoreA || 0) +
+        Number(match.scoreB || 0);
+
+    });
+
+    /* TOTAL MATCHES */
+    document.getElementById("matchesPlayed")
+    .innerText = matches.length;
+
+    /* TOTAL GOALS */
+    document.getElementById("goalsCount")
+    .innerText = totalGoals;
+
+    /* FEATURED MATCH */
+    if(matches.length > 0){
+
+        let latest = matches[matches.length - 1];
+
+        document.getElementById("latestMatch")
+        .innerHTML = `
+
+        <h1 style="margin:0;">
+            ${latest.teamA}
+            ${latest.scoreA}
+
+            -
+
+            ${latest.scoreB}
+            ${latest.teamB}
+        </h1>
+
+        `;
+
+    }else{
+
+        document.getElementById("latestMatch")
+        .innerHTML = "No matches played yet";
+
+    }
+
+});
+
+/* 🏆 TOP SCORER */
+onSnapshot(collection(db, "scorers"), (snapshot) => {
+
+    let scorers = [];
+
+    snapshot.forEach(doc => {
+
+        scorers.push(doc.data());
+
+    });
+
+    if(scorers.length === 0){
+
+        document.getElementById("topScorer")
+        .innerHTML = "No scorers added yet";
+
+        return;
+    }
+
+    /* SORT BY GOALS */
+    scorers.sort((a,b) => b.goals - a.goals);
+
+    let top = scorers[0];
+
+    document.getElementById("topScorer")
+    .innerHTML = `
+
+        <div class="scorer-name">
+            ⚽ ${top.player}
+        </div>
+
+        <p>
+            ${top.team}
+        </p>
+
+        <div class="goals">
+            ${top.goals} Goals
+        </div>
+
+    `;
+
+});
+
+</script>
+
+</body>
+</html>
